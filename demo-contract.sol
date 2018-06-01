@@ -21,7 +21,7 @@ contract GDGLottery {
     function bet(byte char) public {
         require(deposits[msg.sender] >= 1);
 
-        byte toGuess = byte(blockhash(block.number));
+        byte toGuess = byte(blockhash(block.number-1));
 
         if (toGuess == char) {
             deposits[msg.sender] = contractBalance() / 2;
