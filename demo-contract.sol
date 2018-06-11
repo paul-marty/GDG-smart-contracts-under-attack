@@ -25,7 +25,7 @@ contract GDGLottery {
 
         if (toGuess == char) {
             deposits[msg.sender] = contractBalance() / 2;
-            emit LogUserWinner(msg.sender, contractBalance());
+            emit LogUserWinner(msg.sender, deposits[msg.sender]);
         } else {
             deposits[msg.sender] = 0;
             emit LogUserLooser(msg.sender);
